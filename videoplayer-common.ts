@@ -17,6 +17,10 @@ var AUTOPLAY = "autoplay";
 var CONTROLS = "controls";
 var LOOP = "loop";
 
+var ON_OPEN = "opening";
+var ON_ERROR = "error";
+var ON_FINISH = "finished";
+
 // on Android we explicitly set propertySettings to None because android will invalidate its layout (skip unnecessary native call).
 var AffectsLayout = platform.device.os === platform.platformNames.android ? dependencyObservable.PropertyMetadataSettings.None : dependencyObservable.PropertyMetadataSettings.AffectsLayout;
 
@@ -49,7 +53,9 @@ function onSrcPropertyChanged(data: dependencyObservable.PropertyChangeData) {
 
 
 export class Video extends view.View implements definition.Video {
-    public static finishedEvent = "finished";
+    public static finishedEvent = ON_FINISH;
+    public static openingEvent = ON_OPEN;
+    public static errorEvent = ON_ERROR;    
 
     public static srcProperty = new dependencyObservable.Property(
         SRC,

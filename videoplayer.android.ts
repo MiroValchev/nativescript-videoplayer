@@ -31,7 +31,6 @@ export class Video extends videoCommon.Video {
     }
 
     public _createUI() {
-
         var that = new WeakRef(this);
 
         this._android = new android.widget.VideoView(this._context);
@@ -95,7 +94,35 @@ export class Video extends videoCommon.Video {
                 }));
         }
 
+        this._android.setOnErrorListener(new android.media.MediaPlayer.OnErrorListener(
+            {
+                get owner() {
+                    return that.get();
+                },
+                onError: function (v) {
+                    if (this.owner) {
+                        var args: any = {
+                            object: this,
+                            eventName: videoCommon.Video.errorEvent,
+                            value: { what: v.what, extra: v.extra }
+                        };
 
+                        this.owner.notify(args);
+                    }
+                }
+            }));
+
+        this._android.setOnPreparedListener(new android.media.MediaPlayer.OnPreparedListener(
+            {
+                get owner() {
+                    return that.get();
+                },
+                onPrepared: function (v) {
+                    if (this.owner) {
+                        this.owner._emit(videoCommon.Video.openingEvent);
+                    }
+                }
+            }));
     }
 
     public _setNativeVideo(nativeVideo: any) {
@@ -105,7 +132,6 @@ export class Video extends videoCommon.Video {
     public setNativeSource(nativePlayerSrc: string) {
         this.src = nativePlayerSrc;
     }
-
 
     public play() {
         this._android.start();
@@ -122,26 +148,23 @@ export class Video extends videoCommon.Video {
         return;
     }
 
-
     public stop() {
-        this._android.stopPlayback();
+        if (this._android) {
+            this._android.stopPlayback();
+        }
     }
-
 
     public seekToTime(time: number) {
         this._android.seekTo(time);
     }
 
-
     public isPlaying(): boolean {
         return this._android.isPlaying();
     }
 
-
     public getDuration() {
         return this._android.getDuration();
     }
-
 
     public getCurrentTime(): any {
         // let duration = this._android.getDuration();
@@ -150,13 +173,9 @@ export class Video extends videoCommon.Video {
         return currentPosition;
     }
 
-
     public destroy() {
         this.src = null;
         this._android.stopPlayback();
         this._android = null;
     }
-
-
-
 }
