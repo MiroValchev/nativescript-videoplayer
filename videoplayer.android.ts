@@ -100,14 +100,16 @@ export class Video extends videoCommon.Video {
                     return that.get();
                 },
                 onError: function (v) {
-                    if (this.owner) {
-                        var args: any = {
-                            object: this,
-                            eventName: videoCommon.Video.errorEvent,
-                            value: { what: v.what, extra: v.extra }
-                        };
+                    if (this.owner) {                    
+                        // var args: any = {
+                        //     object: this,
+                        //     eventName: videoCommon.Video.errorEvent,
+                        //     value: { what: v.what, extra: v.extra }
+                        // };
 
-                        this.owner.notify(args);
+                        // this.owner.notify(args);
+
+                        this.owner._emit(videoCommon.Video.errorEvent);
                     }
                 }
             }));
